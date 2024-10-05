@@ -28,6 +28,4 @@
     <bean id="testRunnerService" class="ru.otus.hw.service.TestRunnerServiceImpl">
         <constructor-arg name="testService" ref="testServiceImpl"/>
     </bean>
-
-
 </beans>
