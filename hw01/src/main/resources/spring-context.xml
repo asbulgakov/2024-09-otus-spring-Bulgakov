@@ -2,15 +2,15 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://www.springframework.org/schema/beans"
        xmlns:util="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans.xsd
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
 
     <bean id="appProperties" class="ru.otus.hw.config.AppProperties">
         <constructor-arg value="/questions.csv"/>
     </bean>
 
-    <bean id="csvQuestionDao" class="ru.otus.hw.dao.CsvQuestionDao">
+    <bean id="questionDao" class="ru.otus.hw.dao.CsvQuestionDao">
         <constructor-arg ref="appProperties"/>
     </bean>
 
@@ -20,12 +20,12 @@
         </constructor-arg>
     </bean>
 
-    <bean id="testServiceImpl" class="ru.otus.hw.service.TestServiceImpl">
+    <bean id="testService" class="ru.otus.hw.service.TestServiceImpl">
         <constructor-arg name="ioService" ref="ioService"/>
-        <constructor-arg name="csvQuestionDao" ref="csvQuestionDao"/>
+        <constructor-arg name="questionDao" ref="questionDao"/>
     </bean>
 
     <bean id="testRunnerService" class="ru.otus.hw.service.TestRunnerServiceImpl">
-        <constructor-arg name="testService" ref="testServiceImpl"/>
+        <constructor-arg name="testService" ref="testService"/>
     </bean>
 </beans>
