@@ -1,7 +1,6 @@
 package ru.otus.hw.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Answer;
@@ -11,7 +10,6 @@ import ru.otus.hw.domain.TestResult;
 
 import java.util.List;
 
-@Primary
 @Service
 @RequiredArgsConstructor
 public class TestServiceImpl implements TestService {

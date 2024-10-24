@@ -2,7 +2,6 @@ package ru.otus.hw.dao;
 
 import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import ru.otus.hw.config.TestFileNameProvider;
 import ru.otus.hw.dao.dto.QuestionDto;
@@ -14,7 +13,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Primary
 @Repository
 @RequiredArgsConstructor
 public class CsvQuestionDao implements QuestionDao {
