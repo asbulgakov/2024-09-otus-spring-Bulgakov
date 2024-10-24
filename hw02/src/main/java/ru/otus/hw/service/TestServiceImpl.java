@@ -10,7 +10,6 @@ import ru.otus.hw.domain.Student;
 import ru.otus.hw.domain.TestResult;
 
 import java.util.List;
-import java.util.stream.IntStream;
 
 @Primary
 @Service
@@ -28,41 +27,41 @@ public class TestServiceImpl implements TestService {
         var questions = questionDao.findAll();
         var testResult = new TestResult(student);
 
-        questions.forEach(question -> {
-            ioService.printLine(question.text());
-            var answers = getValidatedAnswersList(question);
-
-            printAnswerOptions(question, answers);
-
-            handleUserInput(question, answers, testResult);
-        });
+        processQuestion(questions, testResult);
 
         return testResult;
     }
 
-    private List<Answer> getValidatedAnswersList(Question question) {
-        return question.answers() != null ? question.answers() : List.of();
-    }
+    private void processQuestion(List<Question> questions, TestResult testResult) {
+        questions.forEach(question -> {
+            ioService.printLine(question.text());
+            var answers = question.answers();
 
-    private void printAnswerOptions(Question question, List<?> answers) {
-        IntStream.range(0, answers.size())
-                .forEach(i ->
-                        ioService.printFormattedLine(
-                                "%d. %s", i + 1,
-                                question.answers().get(i).text()
-                        )
-                );
-    }
+            printAnswerOptions(answers);
 
-    private void handleUserInput(Question question, List<Answer> answers, TestResult testResult) {
-        if (!answers.isEmpty()) {
-            int size = question.answers().size();
-            String errorMessage = "Invalid input. Please enter a number between 1 and " + size;
-            String prompt = "Your answer: ";
-            int answerIndex =
-                    ioService.readIntForRangeWithPrompt(1, size, prompt, errorMessage);
-            var isAnswerValid = answers.get(answerIndex - 1).isCorrect(); // Задать вопрос, получить ответ
+            boolean isAnswerValid = isAnswerCorrect(question, answers);
+
             testResult.applyAnswer(question, isAnswerValid);
+        });
+    }
+
+    private void printAnswerOptions(List<Answer> answers) {
+        for (int i = 0; i < answers.size(); i++) {
+            ioService.printFormattedLine("%d. %s", i + 1, answers.get(i).text());
         }
+    }
+
+    private boolean isAnswerCorrect(Question question, List<Answer> answers) {
+        if (answers.isEmpty()) {
+            return false;
+        }
+
+        int size = question.answers().size();
+        String errorMessage = "Invalid input. Please enter a number between 1 and " + size;
+        String prompt = "Your answer: ";
+        int answerIndex =
+                ioService.readIntForRangeWithPrompt(1, size, prompt, errorMessage);
+
+        return answers.get(answerIndex - 1).isCorrect(); // Задать вопрос, получить ответ
     }
 }
