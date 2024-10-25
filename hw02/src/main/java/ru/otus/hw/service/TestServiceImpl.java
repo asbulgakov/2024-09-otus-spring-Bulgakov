@@ -23,14 +23,13 @@ public class TestServiceImpl implements TestService {
         ioService.printLine("");
         ioService.printFormattedLine("Please answer the questions below%n");
         var questions = questionDao.findAll();
-        var testResult = new TestResult(student);
 
-        processQuestion(questions, testResult);
-
-        return testResult;
+        return processQuestion(questions, student);
     }
 
-    private void processQuestion(List<Question> questions, TestResult testResult) {
+    private TestResult processQuestion(List<Question> questions, Student student) {
+        var testResult = new TestResult(student);
+
         questions.forEach(question -> {
             ioService.printLine(question.text());
             var answers = question.answers();
@@ -41,6 +40,8 @@ public class TestServiceImpl implements TestService {
 
             testResult.applyAnswer(question, isAnswerValid);
         });
+
+        return testResult;
     }
 
     private void printAnswerOptions(List<Answer> answers) {
