@@ -1,0 +1,9 @@
+# Добавить сюда своих вопросов. Эту строку надо пропустить при настройке CsvToBean (withSkipLines)
+Есть ли жизнь на Марсе?;Это науке пока не известно%true|Конечно. Красные (НЛО) это с Марса. А зеленые (НЛО) с Венеры%false|Точно нет%false
+Как нужно загружать ресурс из jar в Java?;ClassLoader#geResourceAsStream или ClassPathResource#getInputStream%true|ClassLoader#geResource#getFile + FileReader%false|Wingardium Leviosa%false
+Какой предпочтительный способ реакции на исключения?;@SneakyThrow%false|e.printStackTrace()%false|Проброс дальше с предварительным оборачиванием в бизнес-исключение (например, QuestionReadException)%true|Игнорирование исключения%false
+Какой город является столицей Франции?;Париж%true|Берлин%false|Мадрид%false|Рим%false
+Какая планета известна как Красная планета?;Марс%true|Земля%false|Юпитер%false|Венера%false
+Кто написал пьесу "Ромео и Джульетта"?;Уильям Шекспир%true|Чарльз Диккенс%false|Марк Твен%false|Джейн Остин%false
+Какой океан является самым большим на Земле?;Тихий океан%true|Атлантический океан%false|Индийский океан%false|Северный Ледовитый океан%false
+Какой элемент имеет химический символ 'O'?;Кислород%true|Золото%false|Осмий%false|Серебро%false
