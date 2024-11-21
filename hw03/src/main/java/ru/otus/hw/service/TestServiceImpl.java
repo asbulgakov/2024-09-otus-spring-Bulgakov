@@ -64,6 +64,6 @@ public class TestServiceImpl implements TestService {
         int answerIndex =
                 ioService.readIntForRangeWithPrompt(1, size, prompt, errorMessage);
 
-        return answers.get(answerIndex - 1).isCorrect(); // Задать вопрос, получить ответ
+        return answers.get(answerIndex - 1).isCorrect();
     }
 }
