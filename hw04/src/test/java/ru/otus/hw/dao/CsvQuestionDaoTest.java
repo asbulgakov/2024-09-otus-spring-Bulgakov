@@ -1,10 +1,11 @@
 package ru.otus.hw.dao;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import ru.otus.hw.config.TestFileNameProvider;
 import ru.otus.hw.domain.Question;
 import ru.otus.hw.exceptions.QuestionReadException;
@@ -15,14 +16,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class CsvQuestionDaoTest {
 
-    @Mock
+    @Configuration
+    static class TestConfiguration {
+
+        @Bean
+        public CsvQuestionDao csvQuestionDao(TestFileNameProvider fileNameProvider) {
+            return new CsvQuestionDao(fileNameProvider);
+        }
+    }
+
+    @MockBean
     private TestFileNameProvider fileNameProvider;
 
-    @InjectMocks
+    @Autowired
     private CsvQuestionDao csvQuestionDao;
+
 
     @Test
     void testFindAllWhenCsvFileReadSuccessfullyThenReturnQuestions() {
@@ -37,8 +48,7 @@ public class CsvQuestionDaoTest {
 
     @Test
     void testFindAllWhenCsvFileNotFoundThenThrowQuestionReadException() {
-        String fileName = "/non-existent-file.csv";
-        when(fileNameProvider.getTestFileName()).thenReturn(fileName);
+        when(fileNameProvider.getTestFileName()).thenReturn("/non-existent-file.csv");
 
         assertThatThrownBy(() -> csvQuestionDao.findAll())
                 .isInstanceOf(QuestionReadException.class)

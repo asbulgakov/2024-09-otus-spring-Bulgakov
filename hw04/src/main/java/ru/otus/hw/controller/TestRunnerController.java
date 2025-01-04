@@ -1,12 +1,16 @@
-package ru.otus.hw.service;
+package ru.otus.hw.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import ru.otus.hw.service.ResultService;
+import ru.otus.hw.service.StudentService;
+import ru.otus.hw.service.TestRunnerService;
+import ru.otus.hw.service.TestService;
 
 @ShellComponent
 @RequiredArgsConstructor
-public class TestRunnerServiceImpl implements TestRunnerService {
+public class TestRunnerController implements TestRunnerService {
 
     private final TestService testService;
 
