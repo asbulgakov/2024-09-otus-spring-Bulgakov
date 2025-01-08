@@ -1,0 +1,42 @@
+package ru.otus.hw.dao;
+
+import com.opencsv.bean.CsvToBeanBuilder;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import ru.otus.hw.config.TestFileNameProvider;
+import ru.otus.hw.dao.dto.QuestionDto;
+import ru.otus.hw.domain.Question;
+import ru.otus.hw.exceptions.QuestionReadException;
+
+import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+@RequiredArgsConstructor
+@Component
+public class CsvQuestionDao implements QuestionDao {
+    private final TestFileNameProvider fileNameProvider;
+
+    @Override
+    public List<Question> findAll() {
+
+        try (var reader = new InputStreamReader(
+                Objects.requireNonNull(
+                        getClass().getClassLoader().getResourceAsStream(fileNameProvider.getTestFileName())
+                )
+        )) {
+            var questionDtos = new CsvToBeanBuilder<QuestionDto>(reader)
+                    .withType(QuestionDto.class)
+                    .withSeparator(';')
+                    .withSkipLines(1)
+                    .build()
+                    .parse();
+            return questionDtos.stream()
+                    .map(QuestionDto::toDomainObject)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new QuestionReadException("Failed to read questions from CSV file", e);
+        }
+    }
+}
