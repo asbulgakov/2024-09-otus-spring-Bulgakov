@@ -18,12 +18,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
@@ -37,15 +35,16 @@ public class JdbcBookRepository implements BookRepository {
     @Override
     public Optional<Book> findById(long id) {
         String sql = """
-            SELECT b.id, b.title, a.id AS author_id, a.full_name AS author_name, bg.genre_id
+            SELECT b.id, b.title, a.id AS author_id, a.full_name AS author_name, bg.genre_id, g.name AS genre_name
             FROM books b
-            JOIN authors a ON b.author_id = a.id
+            INNER JOIN authors a ON b.author_id = a.id
             LEFT JOIN books_genres bg ON b.id = bg.book_id
+            LEFT JOIN genres g ON bg.genre_id = g.id
             WHERE b.id = :id
         """;
         Map<String, Object> params = Collections.singletonMap("id", id);
         Book book = namedParameterJdbcOperations.query(
-                sql, params, new BookResultSetExtractor(genreRepository)
+                sql, params, new BookResultSetExtractor()
         );
         return Optional.ofNullable(book);
     }
@@ -78,7 +77,7 @@ public class JdbcBookRepository implements BookRepository {
         String sql = """
             SELECT b.id, b.title, a.id AS author_id, a.full_name AS author_name
             FROM books b
-            JOIN authors a ON b.author_id = a.id
+            INNER JOIN authors a ON b.author_id = a.id
         """;
         return namedParameterJdbcOperations.query(sql, new BookRowMapper());
     }
@@ -170,8 +169,6 @@ public class JdbcBookRepository implements BookRepository {
     @RequiredArgsConstructor
     private static class BookResultSetExtractor implements ResultSetExtractor<Book> {
 
-        private final GenreRepository genreRepository;
-
         @Override
         public Book extractData(ResultSet rs) throws SQLException, DataAccessException {
             if (!rs.next()) {
@@ -184,15 +181,14 @@ public class JdbcBookRepository implements BookRepository {
             String authorName = rs.getString("author_name");
             Author author = new Author(authorId, authorName);
 
-            Set<Long> genreIds = new HashSet<>();
+            List<Genre> genres = new ArrayList<>();
             do {
                 long genreId = rs.getLong("genre_id");
                 if (genreId != 0) {
-                    genreIds.add(genreId);
+                    String genreName = rs.getString("genre_name");
+                    genres.add(new Genre(genreId, genreName));
                 }
             } while (rs.next());
-
-            List<Genre> genres = genreRepository.findAllByIds(genreIds);
             return new Book(id, title, author, genres);
         }
     }
