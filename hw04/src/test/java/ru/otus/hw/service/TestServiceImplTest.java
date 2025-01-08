@@ -17,17 +17,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@SpringBootTest(classes = TestServiceImpl.class)
 class TestServiceImplTest {
-
-    @Configuration
-    static class TestConfiguration {
-
-        @Bean
-        public TestServiceImpl testService(LocalizedIOService ioService, QuestionDao questionDao) {
-            return new TestServiceImpl(ioService, questionDao);
-        }
-    }
 
     @MockBean
     private LocalizedIOService ioService;

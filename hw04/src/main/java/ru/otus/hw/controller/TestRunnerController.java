@@ -10,7 +10,7 @@ import ru.otus.hw.service.TestService;
 
 @ShellComponent
 @RequiredArgsConstructor
-public class TestRunnerController implements TestRunnerService {
+public class TestRunnerController {
 
     private final TestService testService;
 
@@ -18,7 +18,6 @@ public class TestRunnerController implements TestRunnerService {
 
     private final ResultService resultService;
 
-    @Override
     @ShellMethod(value = "Run the test for a student", key = {"run", "r"})
     public void run() {
         var student = studentService.determineCurrentStudent();

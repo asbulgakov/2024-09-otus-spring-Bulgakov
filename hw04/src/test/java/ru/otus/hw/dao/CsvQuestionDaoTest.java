@@ -16,17 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@SpringBootTest(classes = CsvQuestionDao.class)
 public class CsvQuestionDaoTest {
-
-    @Configuration
-    static class TestConfiguration {
-
-        @Bean
-        public CsvQuestionDao csvQuestionDao(TestFileNameProvider fileNameProvider) {
-            return new CsvQuestionDao(fileNameProvider);
-        }
-    }
 
     @MockBean
     private TestFileNameProvider fileNameProvider;
