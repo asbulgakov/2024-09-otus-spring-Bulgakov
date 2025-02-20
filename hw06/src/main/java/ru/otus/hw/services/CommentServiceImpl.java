@@ -3,9 +3,7 @@ package ru.otus.hw.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
-import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentRepository;
 
 import java.util.List;
@@ -14,8 +12,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class CommentServiceImpl implements CommentService {
-
-    private final BookRepository bookRepository;
 
     private final CommentRepository commentRepository;
 
@@ -34,11 +30,9 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public Comment insert(String text, long bookId) {
-        Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new IllegalArgumentException("Book not found with id: " + bookId));
         Comment comment = new Comment();
         comment.setText(text);
-        comment.setBook(book);
+        comment.setBookId(bookId);
         return commentRepository.save(comment);
     }
 

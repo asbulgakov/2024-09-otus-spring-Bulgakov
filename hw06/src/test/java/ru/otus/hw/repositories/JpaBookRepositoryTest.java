@@ -71,25 +71,21 @@ class JpaBookRepositoryTest {
 
         var expectedBook = new Book(0, "BookTitle_10500", author, List.of(genre1, genre2));
         var returnedBook = bookRepository.save(expectedBook);
+
         assertThat(returnedBook).isNotNull()
                 .matches(book -> book.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
 
-        assertThat(bookRepository.findById(returnedBook.getId()))
-                .isPresent()
-                .get()
-                .isEqualTo(returnedBook);
+        Book persistedBook = em.find(Book.class, returnedBook.getId());
 
-        assertThat(bookRepository.findById(returnedBook.getId()))
-                .isPresent()
-                .get()
-                .isEqualTo(returnedBook);
+        assertThat(persistedBook).isNotNull()
+                .usingRecursiveComparison().isEqualTo(returnedBook);
     }
 
     @DisplayName("должен сохранять измененную книгу")
     @Test
     void shouldSaveUpdatedBook() {
-        var existingBook = bookRepository.findById(FIRST_BOOK_ID).orElseThrow();
+        var existingBook = em.find(Book.class, FIRST_BOOK_ID);
 
         var author = em.merge(dbAuthors.get(2));
         var genre1 = em.merge(dbGenres.get(4));
@@ -105,18 +101,22 @@ class JpaBookRepositoryTest {
                 .matches(book -> book.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(existingBook);
 
-        assertThat(bookRepository.findById(returnedBook.getId()))
-                .isPresent()
-                .get()
+        assertThat(em.find(Book.class, returnedBook.getId()))
                 .isEqualTo(returnedBook);
     }
 
     @DisplayName("должен удалять книгу по id ")
     @Test
     void shouldDeleteBook() {
-        assertThat(bookRepository.findById(1L)).isPresent();
-        bookRepository.deleteById(1L);
-        assertThat(bookRepository.findById(1L)).isEmpty();
+        Book book = em.find(Book.class, FIRST_BOOK_ID);
+
+        assertThat(book).isNotNull();
+
+        bookRepository.deleteById(FIRST_BOOK_ID);
+
+        Book deletedBook = em.find(Book.class, FIRST_BOOK_ID);
+
+        assertThat(deletedBook).isNull();
     }
 
     private static List<Author> getDbAuthors() {

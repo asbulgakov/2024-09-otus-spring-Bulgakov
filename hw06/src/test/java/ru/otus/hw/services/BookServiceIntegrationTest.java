@@ -1,0 +1,122 @@
+package ru.otus.hw.services;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
+import ru.otus.hw.models.Book;
+import ru.otus.hw.repositories.AuthorRepository;
+import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.GenreRepository;
+import ru.otus.hw.repositories.JpaAuthorRepository;
+import ru.otus.hw.repositories.JpaBookRepository;
+import ru.otus.hw.repositories.JpaGenreRepository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DisplayName("Сервис для работы с книгами")
+@DataJpaTest
+@Import({
+        BookServiceImpl.class,
+        JpaAuthorRepository.class,
+        JpaGenreRepository.class,
+        JpaBookRepository.class
+})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+class BookServiceIntegrationTest {
+
+    private static final long FIRST_BOOK_ID = 1L;
+
+    private final long AUTHOR_ID = 1L;
+
+    private final long GENRE_FIRST_ID = 1L;
+
+    private final long GENRE_SECOND_ID = 2L;
+
+    @Autowired
+    private BookService bookService;
+
+    @Autowired
+    private AuthorRepository authorRepository;
+
+    @Autowired
+    private GenreRepository genreRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @BeforeEach
+    public void setUp() {
+        bookService = new BookServiceImpl(authorRepository, genreRepository, bookRepository);
+    }
+
+    @Test
+    @DisplayName("должен сохранять новую книгу")
+    void shouldInsertAndFindBook() {
+        Book book = bookService.insert("Test Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID, GENRE_SECOND_ID));
+        Optional<Book> foundBook = bookService.findById(book.getId());
+
+        assertThat(foundBook).isPresent();
+        assertThat(foundBook.get().getTitle()).isEqualTo("Test Book");
+        assertThat(foundBook.get().getAuthor()).isNotNull();
+        assertThat(foundBook.get().getGenres()).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("должен сохранять измененную книгу")
+    void shouldUpdateBook() {
+        Book book = bookService.insert("Test Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID, GENRE_SECOND_ID));
+        Book updatedBook = bookService.update(book.getId(), "Updated Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID));
+
+        Optional<Book> foundBook = bookService.findById(updatedBook.getId());
+        assertThat(foundBook).isPresent();
+        assertThat(foundBook.get().getTitle()).isEqualTo("Updated Book");
+        assertThat(foundBook.get().getGenres()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("должен находить книгу по id")
+    void shouldFindBookById() {
+        Book book = bookService.insert("Test Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID, GENRE_SECOND_ID));
+        Optional<Book> foundBook = bookService.findById(book.getId());
+
+        assertThat(foundBook).isPresent();
+        assertThat(foundBook.get().getId()).isEqualTo(book.getId());
+    }
+
+    @Test
+    @DisplayName("должен находить все книги")
+    void shouldFindAllBooks() {
+        List<Book> books = bookService.findAll();
+
+        assertThat(books).hasSize(3);
+    }
+
+    @Test
+    @DisplayName("должен удалять книгу по id")
+    void shouldDeleteBook() {
+        Book book = bookService.insert("Test Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID, GENRE_SECOND_ID));
+        bookService.deleteById(book.getId());
+
+        Optional<Book> foundBook = bookService.findById(book.getId());
+        assertThat(foundBook).isNotPresent();
+    }
+
+    @Test
+    @DisplayName("Проверяет на отсутствие LazyInitializationException")
+    void shouldNotThrowLazyInitializationException() {
+        Book book = bookService.insert("Test Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID, GENRE_SECOND_ID));
+        Optional<Book> foundBook = bookService.findById(book.getId());
+
+        assertThat(foundBook).isPresent();
+        assertThat(foundBook.get().getAuthor().getFullName()).isNotNull();
+        assertThat(foundBook.get().getGenres()).hasSize(2);
+    }
+}

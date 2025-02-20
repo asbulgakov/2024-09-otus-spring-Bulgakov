@@ -8,7 +8,9 @@ import org.springframework.stereotype.Repository;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.springframework.data.jpa.repository.EntityGraph.EntityGraphType.FETCH;
@@ -22,14 +24,19 @@ public class JpaBookRepository implements BookRepository {
 
     @Override
     public Optional<Book> findById(long id) {
-        return Optional.ofNullable(entityManager.find(Book.class, id));
+        EntityGraph<?> entityGraph = entityManager.createEntityGraph("book-with-author-and-genres");
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(FETCH.getKey(), entityGraph);
+
+        return Optional.ofNullable(entityManager.find(Book.class, id, properties));
     }
 
     @Override
     public List<Book> findAll() {
-        EntityGraph<?> entityGraph = entityManager.createEntityGraph("book-with-author-genres");
+        EntityGraph<?> entityGraph = entityManager.createEntityGraph("book-with-author");
 
-        String jpql = "SELECT b FROM Book b";
+        String jpql = "SELECT DISTINCT b FROM Book b";
 
         return entityManager.createQuery(jpql, Book.class)
                 .setHint(FETCH.getKey(), entityGraph)

@@ -23,9 +23,6 @@ class JpaCommentRepositoryTest {
     private CommentRepository commentRepository;
 
     @Autowired
-    private BookRepository bookRepository;
-
-    @Autowired
     private TestEntityManager em;
 
     @DisplayName("должен загружать комментарий по id")
@@ -42,7 +39,7 @@ class JpaCommentRepositoryTest {
     void shouldReturnCorrectCommentsList() {
         var actualComments = commentRepository.findByBookId(FIRST_BOOK_ID);
         var expectedComments = em.getEntityManager()
-                .createQuery("SELECT c FROM Comment c WHERE c.book.id = :bookId", Comment.class)
+                .createQuery("SELECT c FROM Comment c WHERE c.bookId = :bookId", Comment.class)
                 .setParameter("bookId", FIRST_BOOK_ID)
                 .getResultList();
 
@@ -53,24 +50,17 @@ class JpaCommentRepositoryTest {
     @DisplayName("должен сохранять новый комментарий")
     @Test
     void shouldSaveNewComment() {
-        var book = bookRepository.findById(FIRST_BOOK_ID).orElseThrow();
-
-        var expectedComment = new Comment(0, "New Comment", book);
+        var expectedComment = new Comment(0, "New Comment", FIRST_BOOK_ID);
         var returnedComment = commentRepository.save(expectedComment);
 
         assertThat(returnedComment).isNotNull()
                 .matches(comment -> comment.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedComment);
 
-        assertThat(commentRepository.findById(returnedComment.getId()))
-                .isPresent()
-                .get()
-                .isEqualTo(returnedComment);
+        Comment persistedComment = em.find(Comment.class, returnedComment.getId());
 
-        assertThat(commentRepository.findById(returnedComment.getId()))
-                .isPresent()
-                .get()
-                .isEqualTo(returnedComment);
+        assertThat(persistedComment).isNotNull()
+                .usingRecursiveComparison().isEqualTo(returnedComment);
     }
 
     @DisplayName("должен сохранять измененный комментарий")
@@ -86,10 +76,10 @@ class JpaCommentRepositoryTest {
                 .matches(book -> book.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(existingComment);
 
-        assertThat(commentRepository.findById(returnedComment.getId()))
-                .isPresent()
-                .get()
-                .isEqualTo(returnedComment);
+        Comment persistedComment = em.find(Comment.class, returnedComment.getId());
+
+        assertThat(persistedComment).isNotNull()
+                .usingRecursiveComparison().isEqualTo(returnedComment);
     }
 
     @DisplayName("должен удалять комментарий по id ")

@@ -23,11 +23,7 @@ public class JpaCommentRepository implements CommentRepository {
 
     @Override
     public List<Comment> findByBookId(long bookId) {
-        String jpql = "SELECT DISTINCT c FROM Comment c " +
-                "JOIN FETCH c.book b " +
-                "JOIN FETCH b.author " +
-                "LEFT JOIN FETCH b.genres " +
-                "WHERE c.book.id = :bookId";
+        String jpql = "SELECT c FROM Comment c WHERE c.bookId = :bookId";
         return entityManager.createQuery(jpql, Comment.class)
                 .setParameter("bookId", bookId)
                 .getResultList();
