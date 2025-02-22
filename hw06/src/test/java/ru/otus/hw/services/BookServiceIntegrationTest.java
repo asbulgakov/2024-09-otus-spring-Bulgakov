@@ -7,7 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import ru.otus.hw.converters.BookDtoConverter;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.models.dto.BookDto;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
@@ -27,12 +31,12 @@ import static org.assertj.core.api.Assertions.assertThat;
         BookServiceImpl.class,
         JpaAuthorRepository.class,
         JpaGenreRepository.class,
-        JpaBookRepository.class
+        JpaBookRepository.class,
+        BookDtoConverter.class,
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 class BookServiceIntegrationTest {
-
-    private static final long FIRST_BOOK_ID = 1L;
 
     private final long AUTHOR_ID = 1L;
 
@@ -52,9 +56,12 @@ class BookServiceIntegrationTest {
     @Autowired
     private BookRepository bookRepository;
 
+    @Autowired
+    private BookDtoConverter converter;
+
     @BeforeEach
     public void setUp() {
-        bookService = new BookServiceImpl(authorRepository, genreRepository, bookRepository);
+        bookService = new BookServiceImpl(authorRepository, genreRepository, bookRepository, converter);
     }
 
     @Test
@@ -94,7 +101,7 @@ class BookServiceIntegrationTest {
     @Test
     @DisplayName("должен находить все книги")
     void shouldFindAllBooks() {
-        List<Book> books = bookService.findAll();
+        List<BookDto> books = bookService.findAll();
 
         assertThat(books).hasSize(3);
     }

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.models.Comment;
 import ru.otus.hw.repositories.CommentRepository;
 import ru.otus.hw.repositories.JpaCommentRepository;
@@ -20,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @Import({CommentServiceImpl.class, JpaCommentRepository.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 class CommentServiceIntegrationTest {
 
     @Autowired

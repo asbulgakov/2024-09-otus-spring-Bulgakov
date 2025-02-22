@@ -66,7 +66,7 @@ class JpaCommentRepositoryTest {
     @DisplayName("должен сохранять измененный комментарий")
     @Test
     void shouldSaveUpdatedBook() {
-        var existingComment = commentRepository.findById(FIRST_COMMENT_ID).orElseThrow();
+        var existingComment = em.find(Comment.class, FIRST_COMMENT_ID);
 
         existingComment.setText("Updated new comment");
 
