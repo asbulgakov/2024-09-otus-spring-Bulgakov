@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @Import({CommentServiceImpl.class, JpaCommentRepository.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Transactional(propagation = Propagation.REQUIRES_NEW)
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
 class CommentServiceIntegrationTest {
 
     @Autowired
