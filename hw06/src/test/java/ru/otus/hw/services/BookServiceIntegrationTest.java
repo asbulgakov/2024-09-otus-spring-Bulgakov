@@ -1,6 +1,5 @@
 package ru.otus.hw.services;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.converters.BookDtoConverter;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.dto.BookDto;
-import ru.otus.hw.repositories.AuthorRepository;
-import ru.otus.hw.repositories.BookRepository;
-import ru.otus.hw.repositories.GenreRepository;
 import ru.otus.hw.repositories.JpaAuthorRepository;
 import ru.otus.hw.repositories.JpaBookRepository;
 import ru.otus.hw.repositories.JpaGenreRepository;
@@ -35,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         BookDtoConverter.class,
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Transactional(propagation = Propagation.REQUIRES_NEW)
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
 class BookServiceIntegrationTest {
 
     private final long AUTHOR_ID = 1L;
@@ -45,24 +41,8 @@ class BookServiceIntegrationTest {
     private final long GENRE_SECOND_ID = 2L;
 
     @Autowired
-    private BookService bookService;
+    private BookServiceImpl bookService;
 
-    @Autowired
-    private AuthorRepository authorRepository;
-
-    @Autowired
-    private GenreRepository genreRepository;
-
-    @Autowired
-    private BookRepository bookRepository;
-
-    @Autowired
-    private BookDtoConverter converter;
-
-    @BeforeEach
-    public void setUp() {
-        bookService = new BookServiceImpl(authorRepository, genreRepository, bookRepository, converter);
-    }
 
     @Test
     @DisplayName("должен сохранять новую книгу")

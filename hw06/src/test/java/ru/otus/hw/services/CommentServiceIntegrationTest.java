@@ -1,6 +1,5 @@
 package ru.otus.hw.services;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.models.Comment;
-import ru.otus.hw.repositories.CommentRepository;
 import ru.otus.hw.repositories.JpaCommentRepository;
 
 import java.util.List;
@@ -27,14 +25,6 @@ class CommentServiceIntegrationTest {
 
     @Autowired
     private CommentService commentService;
-
-    @Autowired
-    private CommentRepository commentRepository;
-
-    @BeforeEach
-    public void setUp() {
-        commentService = new CommentServiceImpl(commentRepository);
-    }
 
     @Test
     @DisplayName("должен сохранять новый комментарий")
