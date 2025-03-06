@@ -49,6 +49,7 @@ public class BookServiceImpl implements BookService {
         return save(0, title, authorId, genresIds);
     }
 
+    @Transactional
     @Override
     public Book update(long id, String title, long authorId, Set<Long> genresIds) {
         return save(id, title, authorId, genresIds);
