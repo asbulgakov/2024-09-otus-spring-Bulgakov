@@ -4,13 +4,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.converters.BookDtoConverter;
-import ru.otus.hw.models.Book;
+import ru.otus.hw.mappers.BookMapper;
 import ru.otus.hw.models.dto.BookDto;
 import ru.otus.hw.repositories.JpaAuthorRepository;
 import ru.otus.hw.repositories.JpaBookRepository;
@@ -29,9 +26,8 @@ import static org.assertj.core.api.Assertions.assertThat;
         JpaAuthorRepository.class,
         JpaGenreRepository.class,
         JpaBookRepository.class,
-        BookDtoConverter.class,
+        BookMapper.class,
 })
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 class BookServiceIntegrationTest {
 
@@ -47,8 +43,8 @@ class BookServiceIntegrationTest {
     @Test
     @DisplayName("должен сохранять новую книгу")
     void shouldInsertAndFindBook() {
-        Book book = bookService.insert("Test Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID, GENRE_SECOND_ID));
-        Optional<Book> foundBook = bookService.findById(book.getId());
+        BookDto book = bookService.insert("Test Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID, GENRE_SECOND_ID));
+        Optional<BookDto> foundBook = bookService.findById(book.getId());
 
         assertThat(foundBook).isPresent();
         assertThat(foundBook.get().getTitle()).isEqualTo("Test Book");
@@ -59,10 +55,10 @@ class BookServiceIntegrationTest {
     @Test
     @DisplayName("должен сохранять измененную книгу")
     void shouldUpdateBook() {
-        Book book = bookService.insert("Test Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID, GENRE_SECOND_ID));
-        Book updatedBook = bookService.update(book.getId(), "Updated Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID));
+        BookDto book = bookService.insert("Test Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID, GENRE_SECOND_ID));
+        BookDto updatedBook = bookService.update(book.getId(), "Updated Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID));
 
-        Optional<Book> foundBook = bookService.findById(updatedBook.getId());
+        Optional<BookDto> foundBook = bookService.findById(updatedBook.getId());
         assertThat(foundBook).isPresent();
         assertThat(foundBook.get().getTitle()).isEqualTo("Updated Book");
         assertThat(foundBook.get().getGenres()).hasSize(1);
@@ -71,8 +67,8 @@ class BookServiceIntegrationTest {
     @Test
     @DisplayName("должен находить книгу по id")
     void shouldFindBookById() {
-        Book book = bookService.insert("Test Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID, GENRE_SECOND_ID));
-        Optional<Book> foundBook = bookService.findById(book.getId());
+        BookDto book = bookService.insert("Test Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID, GENRE_SECOND_ID));
+        Optional<BookDto> foundBook = bookService.findById(book.getId());
 
         assertThat(foundBook).isPresent();
         assertThat(foundBook.get().getId()).isEqualTo(book.getId());
@@ -83,24 +79,24 @@ class BookServiceIntegrationTest {
     void shouldFindAllBooks() {
         List<BookDto> books = bookService.findAll();
 
-        assertThat(books).hasSize(3);
+        assertThat(books).hasSize(5);
     }
 
     @Test
     @DisplayName("должен удалять книгу по id")
     void shouldDeleteBook() {
-        Book book = bookService.insert("Test Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID, GENRE_SECOND_ID));
+        BookDto book = bookService.insert("Test Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID, GENRE_SECOND_ID));
         bookService.deleteById(book.getId());
 
-        Optional<Book> foundBook = bookService.findById(book.getId());
+        Optional<BookDto> foundBook = bookService.findById(book.getId());
         assertThat(foundBook).isNotPresent();
     }
 
     @Test
     @DisplayName("Проверяет на отсутствие LazyInitializationException")
     void shouldNotThrowLazyInitializationException() {
-        Book book = bookService.insert("Test Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID, GENRE_SECOND_ID));
-        Optional<Book> foundBook = bookService.findById(book.getId());
+        BookDto book = bookService.insert("Test Book", AUTHOR_ID, Set.of(GENRE_FIRST_ID, GENRE_SECOND_ID));
+        Optional<BookDto> foundBook = bookService.findById(book.getId());
 
         assertThat(foundBook).isPresent();
         assertThat(foundBook.get().getAuthor().getFullName()).isNotNull();
