@@ -116,7 +116,7 @@ class JpaCommentRepositoryTest {
         Comment comment = em.find(Comment.class, FIRST_COMMENT_ID);
         assertThat(comment).isNotNull();
         commentRepository.deleteById(FIRST_COMMENT_ID);
-        assertThat(commentRepository.findById(FIRST_COMMENT_ID)).isEmpty();
+        assertThat(em.find(Comment.class, FIRST_COMMENT_ID)).isNull();
     }
 
     private static List<Author> getDbAuthors() {
