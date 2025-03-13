@@ -11,6 +11,7 @@ import ru.otus.hw.mappers.BookMapper;
 import ru.otus.hw.models.dto.BookDto;
 import ru.otus.hw.repositories.JpaAuthorRepository;
 import ru.otus.hw.repositories.JpaBookRepository;
+import ru.otus.hw.repositories.JpaCommentRepository;
 import ru.otus.hw.repositories.JpaGenreRepository;
 
 import java.util.List;
@@ -26,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         JpaAuthorRepository.class,
         JpaGenreRepository.class,
         JpaBookRepository.class,
+        JpaCommentRepository.class,
         BookMapper.class,
 })
 @Transactional(propagation = Propagation.NOT_SUPPORTED)

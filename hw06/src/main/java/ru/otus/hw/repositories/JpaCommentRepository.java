@@ -46,4 +46,12 @@ public class JpaCommentRepository implements CommentRepository {
             entityManager.remove(comment);
         }
     }
+
+    @Override
+    public void deleteAllByBookId(long bookId) {
+        String jpql = "DELETE FROM Comment c WHERE c.book.id = :bookId";
+        entityManager.createQuery(jpql)
+                .setParameter("bookId", bookId)
+                .executeUpdate();
+    }
 }
