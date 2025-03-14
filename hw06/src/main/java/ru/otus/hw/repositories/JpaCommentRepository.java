@@ -33,10 +33,10 @@ public class JpaCommentRepository implements CommentRepository {
     public Comment save(Comment comment) {
         if (comment.getId() == 0) {
             entityManager.persist(comment);
-        } else {
-            entityManager.merge(comment);
+            return comment;
         }
-        return comment;
+
+        return entityManager.merge(comment);
     }
 
     @Override
